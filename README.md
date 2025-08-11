@@ -1,13 +1,44 @@
-# ADGM Corporate Agent - RAG with Groq
+ADGM Compliance Document Reviewer 
+ ADGM Compliance Document Reviewer — RAG + Groq
+This project is a Retrieval-Augmented Generation (RAG) pipeline integrated with Groq LLM API for reviewing ADGM corporate documents.
+It automatically downloads reference materials, builds a vector database, and analyzes uploaded documents for compliance issues — inserting inline comments in `.docx` files.
 
-This repository contains a simple RAG pipeline using the Groq API (preferred) with a fallback to SentenceTransformers embeddings. It parses uploaded .docx files and the provided Task.pdf resources, builds a FAISS vectorstore, and serves a small Gradio UI to query the corpus using Groq as the LLM.
 
-Quick steps:
-1. Create a Python venv and install dependencies: `pip install -r requirements.txt`
-2. Set `GROQ_API_KEY` environment variable if you want to use Groq embeddings + Groq chat. If not set, the pipeline falls back to local sentence-transformers embeddings.
-3. Place example files in `uploads/` (there is often a sample `Task.pdf` available in `/mnt/data/Task.pdf` in some environments).
-4. Run `python gradio_app.py` and open the Gradio URL.
+ Flowchart:
+(Data Sources) → Download → Extract Text → Vector Database (Chroma)
+(User Upload) → Extract Text → Chunk & Query Groq → LLM Analysis → Issues JSON + Comments → Reviewed DOCX + Metadata JSON → Download Results
 
-Notes:
-- The code uses an OpenAI-compatible Groq endpoint. If your Groq account uses a different endpoint, update `GROQ_EMBEDDING_ENDPOINT` in `embeddings.py` and `GROQ_CHAT_ENDPOINT` in `rag.py`.
-- The embedding model string is configurable.
+
+ How It Works:
+1. Extract Resource URLs from Data Sources.docx and Task.pdf.
+2. Download & Parse (PDF/DOCX/HTML).
+3. Create Vector Store with Chroma.
+4. RAG Pipeline for retrieval + LLM analysis.
+5. LLM detects jurisdiction errors, missing signatures, ambiguous clauses, non-compliance.
+6. Annotated Output in reviewed DOCX with inline comments.
+
+
+ Getting a Groq API Key:
+1. Go to https://console.groq.com/keys
+2. Sign in or create an account.
+3. Create API Key.
+4. Save it in `.env` file:
+   GROQ_API_KEY=your_api_key_here
+
+
+ Running the Project:
+1. Install dependencies: pip install -r requirements.txt
+2. Prepare reference data: python chroma_store.py
+3. Run the review app: streamlit run app.py
+4. Upload document → Get reviewed DOCX.
+
+
+ Project Structure:
+app.py              — Streamlit front-end
+chroma_store.py     — Builds Chroma vector DB from reference docs
+requirements.txt    — Python dependencies
+Data Sources.docx   — Official ADGM links
+notes.txt           — Development notes
+.env                — API keys (ignored in Git)
+vector_store/       — Vector DB storage (generated)
+data/               — Raw, extracted, reviewed docs
