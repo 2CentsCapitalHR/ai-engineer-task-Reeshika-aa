@@ -1,0 +1,12 @@
+langchain
+groq-python
+gradio
+python-docx
+PyPDF2
+faiss-cpu
+sentence-transformers
+requests
+tqdm
+numpy
+scikit-learn
+pytest
